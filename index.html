@@ -1,0 +1,368 @@
+cat > /mnt/user-data/outputs/bangun_datar_segiempat.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bangun Datar Segiempat</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:#FFF8F0;min-height:100vh;padding-bottom:40px}
+.header{background:linear-gradient(120deg,#7C5CBF 0%,#E85D9C 40%,#F59E0B 80%,#22C55E 100%);padding:22px 20px 18px;text-align:center}
+.header h1{font-family:'Fredoka One',cursive;font-size:clamp(1.4rem,4vw,2.2rem);color:#fff;letter-spacing:1px;text-shadow:0 2px 8px rgba(0,0,0,.2)}
+.header p{color:rgba(255,255,255,.92);font-size:.95rem;margin-top:5px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,auto);gap:16px;max-width:1100px;margin:22px auto 0;padding:0 22px}
+.shape-card{background:#fff;border-radius:20px;box-shadow:0 6px 24px rgba(0,0,0,.10);overflow:hidden;cursor:pointer;transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s;border:3px solid transparent;display:flex;flex-direction:column}
+.shape-card:hover{transform:translateY(-5px) scale(1.02);box-shadow:0 14px 36px rgba(0,0,0,.16)}
+.card-top{padding:14px 14px 10px;border-bottom:2px dashed #f0f0f0}
+.card-title{font-family:'Fredoka One',cursive;font-size:1.05rem;letter-spacing:.3px;margin-bottom:8px;text-align:center}
+.shape-svg-wrap{width:100%;height:80px;display:flex;align-items:center;justify-content:center}
+.shape-svg-wrap svg{height:80px;width:auto;max-width:130px}
+.card-bottom{padding:10px 14px 14px;flex:1;display:flex;flex-direction:column;gap:5px}
+.formula-line{font-size:.78rem;font-weight:700;color:#666;line-height:1.5}
+.formula-line span{color:#222;font-weight:800}
+.click-hint{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 10px;border-radius:30px;font-size:.78rem;font-weight:900;color:#fff;transition:opacity .15s}
+
+.c1{border-color:#7C5CBF} .c1 .card-title{color:#7C5CBF} .c1 .click-hint{background:#7C5CBF}
+.c2{border-color:#22A874} .c2 .card-title{color:#22A874} .c2 .click-hint{background:#22A874}
+.c3{border-color:#E8503A} .c3 .card-title{color:#E8503A} .c3 .click-hint{background:#E8503A}
+.c4{border-color:#E85D9C} .c4 .card-title{color:#E85D9C} .c4 .click-hint{background:#E85D9C}
+.c5{border-color:#F59E0B} .c5 .card-title{color:#D97706} .c5 .click-hint{background:#F59E0B}
+.c6{border-color:#2563EB} .c6 .card-title{color:#2563EB} .c6 .click-hint{background:#2563EB}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(20,10,40,.55);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center;padding:16px}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:24px;box-shadow:0 20px 70px rgba(0,0,0,.22);width:100%;max-width:420px;overflow:hidden;position:relative;animation:popIn .25s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-header{padding:20px 22px 14px;display:flex;align-items:center;gap:12px}
+.modal-icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-header h2{font-family:'Fredoka One',cursive;font-size:1.4rem;line-height:1.2}
+.btn-close{position:absolute;top:12px;right:14px;background:#f0f0f0;border:none;border-radius:50%;width:32px;height:32px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.btn-close:hover{background:#e0e0e0}
+.choice-screen{padding:8px 22px 26px}
+.choice-screen p{font-size:.95rem;font-weight:700;color:#555;margin-bottom:14px;text-align:center}
+.choice-btns{display:flex;gap:12px}
+.choice-btn{flex:1;padding:14px 8px;border:none;border-radius:16px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;color:#fff;transition:transform .18s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.choice-btn:hover{transform:translateY(-3px) scale(1.04)}
+.btn-keliling{background:linear-gradient(135deg,#F59E0B,#EF4444)}
+.btn-luas{background:linear-gradient(135deg,#10B981,#3B82F6)}
+.choice-btn .icon{font-size:1.7rem}
+.calc-screen{display:none;padding:4px 22px 26px}
+.calc-screen.show{display:block}
+.calc-type-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:30px;font-size:.86rem;font-weight:800;color:#fff;margin-bottom:16px}
+.badge-keliling{background:linear-gradient(90deg,#F59E0B,#EF4444)}
+.badge-luas{background:linear-gradient(90deg,#10B981,#3B82F6)}
+.formula-display{background:#F8F9FA;border-radius:12px;padding:11px 14px;margin-bottom:16px;font-size:.88rem;font-weight:700;color:#444;border-left:4px solid #7C5CBF;line-height:1.6}
+.input-group{margin-bottom:12px}
+.input-group label{display:block;font-size:.86rem;font-weight:800;color:#444;margin-bottom:5px}
+.input-group input{width:100%;padding:11px 14px;border:2.5px solid #E0E0E0;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;outline:none;transition:border-color .15s}
+.input-group input:focus{border-color:#7C5CBF}
+.btn-hitung{width:100%;padding:13px;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;color:#fff;cursor:pointer;background:linear-gradient(135deg,#7C5CBF,#22A874);box-shadow:0 4px 14px rgba(124,92,191,.3);transition:transform .15s}
+.btn-hitung:hover{transform:translateY(-2px)}
+.result-box{display:none;margin-top:14px;background:linear-gradient(135deg,#EDE7F6,#E8F5E9);border-radius:14px;padding:14px 16px;text-align:center;animation:popIn .22s cubic-bezier(.34,1.56,.64,1)}
+.result-box.show{display:block}
+.result-label{font-size:.86rem;font-weight:700;color:#666}
+.result-value{font-family:'Fredoka One',cursive;font-size:1.9rem;color:#7C5CBF;margin:4px 0 2px}
+.result-unit{font-size:.84rem;font-weight:700;color:#888}
+.btn-back{margin-top:10px;width:100%;padding:9px;border:2.5px solid #ddd;border-radius:10px;background:#fff;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;color:#666;cursor:pointer;transition:background .15s}
+.btn-back:hover{background:#f5f5f5}
+.shape-stroke{stroke:#333;stroke-width:2.5;fill:none}
+.right-angle{stroke:#333;stroke-width:2;fill:none}
+.tick-mark{stroke:#333;stroke-width:2.5}
+.dim-label{font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;fill:#555}
+.dashed-line{stroke:#777;stroke-width:1.5;stroke-dasharray:4,3;fill:none}
+.footer{text-align:center;margin-top:32px;font-size:.8rem;color:#aaa;font-weight:700}
+@media(max-width:700px){.grid{grid-template-columns:1fr;padding:0 12px}}
+@media(min-width:701px) and (max-width:960px){.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🔷 Bangun Datar Segiempat</h1>
+  <p>Klik kartu untuk menghitung keliling &amp; luas!</p>
+</div>
+
+<div class="grid" id="mainGrid"></div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <button class="btn-close" onclick="closeModal()">✕</button>
+    <div class="modal-header" id="modalHeader"></div>
+    <div class="choice-screen" id="choiceScreen">
+      <p>Apa yang ingin kamu hitung?</p>
+      <div class="choice-btns">
+        <button class="choice-btn btn-keliling" onclick="openCalc('keliling')"><span class="icon">📐</span>Keliling</button>
+        <button class="choice-btn btn-luas" onclick="openCalc('luas')"><span class="icon">📏</span>Luas</button>
+      </div>
+    </div>
+    <div class="calc-screen" id="calcScreen">
+      <div id="calcBadge"></div>
+      <div class="formula-display" id="formulaDisplay"></div>
+      <div id="inputFields"></div>
+      <button class="btn-hitung" onclick="hitung()">🔢 Hitung Sekarang!</button>
+      <div class="result-box" id="resultBox">
+        <div class="result-label" id="resultLabel"></div>
+        <div class="result-value" id="resultValue"></div>
+        <div class="result-unit" id="resultUnit"></div>
+      </div>
+      <button class="btn-back" onclick="backToChoice()">← Kembali pilih</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer">Media Pembelajaran Matematika SD — Bangun Datar Segiempat</div>
+
+<script>
+const shapes = [
+  {
+    id: 'persegi',
+    name: 'Persegi',
+    color: 'c1',
+    svgPath: `
+      <rect x="20" y="10" width="90" height="90" class="shape-stroke"/>
+      <polyline points="20,20 30,20 30,10" class="right-angle"/>
+      <polyline points="100,20 100,30 110,30" class="right-angle"/>
+      <polyline points="100,90 90,90 90,100" class="right-angle"/>
+      <polyline points="20,90 30,90 30,100" class="right-angle"/>
+      <line x1="63" y1="7" x2="68" y2="12" class="tick-mark"/>
+      <line x1="67" y1="7" x2="72" y2="12" class="tick-mark"/>
+      <line x1="63" y1="98" x2="68" y2="103" class="tick-mark"/>
+      <line x1="67" y1="98" x2="72" y2="103" class="tick-mark"/>
+      <line x1="13" y1="53" x2="18" y2="58" class="tick-mark"/>
+      <line x1="13" y1="57" x2="18" y2="62" class="tick-mark"/>
+      <line x1="112" y1="53" x2="117" y2="58" class="tick-mark"/>
+      <line x1="112" y1="57" x2="117" y2="62" class="tick-mark"/>
+      <text x="120" y="60" class="dim-label">s</text>
+      <text x="63" y="118" class="dim-label">s</text>`,
+    formulas: {
+      keliling: { text: 'K = 4 × s', fn: v => 4 * v.s, inputs: [{id:'s', label:'Sisi (s)', unit:'cm'}], unit: 'cm' },
+      luas:     { text: 'L = s × s = s²', fn: v => v.s * v.s, inputs: [{id:'s', label:'Sisi (s)', unit:'cm'}], unit: 'cm²' }
+    }
+  },
+  {
+    id: 'persegi_panjang',
+    name: 'Persegi Panjang',
+    color: 'c2',
+    svgPath: `
+      <rect x="10" y="22" width="110" height="66" class="shape-stroke"/>
+      <polyline points="10,32 20,32 20,22" class="right-angle"/>
+      <polyline points="110,32 110,42 120,42" class="right-angle"/>
+      <polyline points="110,78 100,78 100,88" class="right-angle"/>
+      <polyline points="10,78 20,78 20,88" class="right-angle"/>
+      <line x1="58" y1="18" x2="63" y2="24" class="tick-mark"/>
+      <line x1="62" y1="18" x2="67" y2="24" class="tick-mark"/>
+      <line x1="58" y1="84" x2="63" y2="90" class="tick-mark"/>
+      <line x1="62" y1="84" x2="67" y2="90" class="tick-mark"/>
+      <line x1="6" y1="52" x2="11" y2="58" class="tick-mark"/>
+      <line x1="119" y1="52" x2="124" y2="58" class="tick-mark"/>
+      <text x="58" y="14" class="dim-label">p</text>
+      <text x="126" y="59" class="dim-label">l</text>`,
+    formulas: {
+      keliling: { text: 'K = 2 × (p + l)', fn: v => 2*(v.p+v.l), inputs: [{id:'p',label:'Panjang (p)',unit:'cm'},{id:'l',label:'Lebar (l)',unit:'cm'}], unit: 'cm' },
+      luas:     { text: 'L = p × l', fn: v => v.p*v.l, inputs: [{id:'p',label:'Panjang (p)',unit:'cm'},{id:'l',label:'Lebar (l)',unit:'cm'}], unit: 'cm²' }
+    }
+  },
+  {
+    id: 'jajar_genjang',
+    name: 'Jajar Genjang',
+    color: 'c3',
+    svgPath: `
+      <polygon points="28,90 12,30 102,30 118,90" class="shape-stroke"/>
+      <line x1="55" y1="30" x2="55" y2="90" class="dashed-line"/>
+      <polyline points="55,80 65,80 65,90" class="right-angle"/>
+      <line x1="62" y1="88" x2="68" y2="82" class="tick-mark"/>
+      <line x1="67" y1="88" x2="73" y2="82" class="tick-mark"/>
+      <line x1="52" y1="32" x2="58" y2="26" class="tick-mark"/>
+      <line x1="57" y1="32" x2="63" y2="26" class="tick-mark"/>
+      <line x1="17" y1="62" x2="23" y2="56" class="tick-mark"/>
+      <line x1="107" y1="62" x2="113" y2="56" class="tick-mark"/>
+      <text x="60" y="115" class="dim-label">Alas</text>
+      <text x="28" y="60" class="dim-label" style="fill:#E8503A;font-size:10px">Tinggi</text>`,
+    formulas: {
+      keliling: { text: 'K = 2 × (AB + BC)', fn: v => 2*(v.ab+v.bc), inputs: [{id:'ab',label:'Sisi AB = CD',unit:'cm'},{id:'bc',label:'Sisi BC = AD',unit:'cm'}], unit: 'cm' },
+      luas:     { text: 'L = alas × tinggi', fn: v => v.a*v.t, inputs: [{id:'a',label:'Alas (a)',unit:'cm'},{id:'t',label:'Tinggi (t)',unit:'cm'}], unit: 'cm²' }
+    }
+  },
+  {
+    id: 'belah_ketupat',
+    name: 'Belah Ketupat',
+    color: 'c4',
+    svgPath: `
+      <polygon points="65,8 118,55 65,102 12,55" class="shape-stroke"/>
+      <line x1="65" y1="8" x2="65" y2="102" class="dashed-line"/>
+      <line x1="12" y1="55" x2="118" y2="55" class="dashed-line"/>
+      <polyline points="65,55 75,55 75,65" class="right-angle"/>
+      <line x1="87" y1="30" x2="93" y2="36" class="tick-mark"/>
+      <line x1="91" y1="26" x2="97" y2="32" class="tick-mark"/>
+      <line x1="87" y1="76" x2="93" y2="82" class="tick-mark"/>
+      <line x1="91" y1="72" x2="97" y2="78" class="tick-mark"/>
+      <line x1="37" y1="30" x2="43" y2="36" class="tick-mark"/>
+      <line x1="41" y1="26" x2="47" y2="32" class="tick-mark"/>
+      <line x1="37" y1="76" x2="43" y2="82" class="tick-mark"/>
+      <line x1="41" y1="72" x2="47" y2="78" class="tick-mark"/>
+      <text x="2" y="58" class="dim-label">A</text>
+      <text x="120" y="58" class="dim-label">C</text>
+      <text x="62" y="5" class="dim-label">D</text>
+      <text x="62" y="115" class="dim-label">B</text>`,
+    formulas: {
+      keliling: { text: 'K = 4 × sisi', fn: v => 4*v.s, inputs: [{id:'s',label:'Sisi (s)',unit:'cm'}], unit: 'cm' },
+      luas:     { text: 'L = (d₁ × d₂) ÷ 2', fn: v => (v.d1*v.d2)/2, inputs: [{id:'d1',label:'Diagonal 1 (AC)',unit:'cm'},{id:'d2',label:'Diagonal 2 (BD)',unit:'cm'}], unit: 'cm²' }
+    }
+  },
+  {
+    id: 'layang_layang',
+    name: 'Layang-Layang',
+    color: 'c5',
+    svgPath: `
+      <polygon points="65,5 110,60 65,100 20,60" class="shape-stroke"/>
+      <line x1="65" y1="5" x2="65" y2="100" class="dashed-line"/>
+      <line x1="20" y1="60" x2="110" y2="60" class="dashed-line"/>
+      <polyline points="65,60 75,60 75,70" class="right-angle"/>
+      <line x1="39" y1="30" x2="44" y2="36" class="tick-mark"/>
+      <line x1="43" y1="26" x2="48" y2="32" class="tick-mark"/>
+      <line x1="86" y1="30" x2="91" y2="36" class="tick-mark"/>
+      <line x1="90" y1="26" x2="95" y2="32" class="tick-mark"/>
+      <line x1="39" y1="83" x2="44" y2="78" class="tick-mark"/>
+      <line x1="88" y1="83" x2="93" y2="78" class="tick-mark"/>
+      <text x="2" y="63" class="dim-label">A</text>
+      <text x="112" y="63" class="dim-label">C</text>
+      <text x="63" y="3" class="dim-label">D</text>
+      <text x="63" y="115" class="dim-label">B</text>`,
+    formulas: {
+      keliling: { text: 'K = 2 × (AB + BC)', fn: v => 2*(v.ab+v.bc), inputs: [{id:'ab',label:'Sisi AB = AD',unit:'cm'},{id:'bc',label:'Sisi BC = DC',unit:'cm'}], unit: 'cm' },
+      luas:     { text: 'L = (d₁ × d₂) ÷ 2', fn: v => (v.d1*v.d2)/2, inputs: [{id:'d1',label:'Diagonal AC (d₁)',unit:'cm'},{id:'d2',label:'Diagonal BD (d₂)',unit:'cm'}], unit: 'cm²' }
+    }
+  },
+  {
+    id: 'trapesium',
+    name: 'Trapesium',
+    color: 'c6',
+    svgPath: `
+      <polygon points="28,92 102,92 115,28 15,28" class="shape-stroke"/>
+      <line x1="60" y1="28" x2="60" y2="92" class="dashed-line"/>
+      <polyline points="60,82 70,82 70,92" class="right-angle"/>
+      <line x1="60" y1="24" x2="66" y2="30" class="tick-mark"/>
+      <line x1="60" y1="88" x2="66" y2="94" class="tick-mark"/>
+      <line x1="65" y1="88" x2="71" y2="94" class="tick-mark"/>
+      <text x="26" y="16" class="dim-label">D</text>
+      <text x="112" y="16" class="dim-label">C</text>
+      <text x="10" y="106" class="dim-label">A</text>
+      <text x="104" y="106" class="dim-label">B</text>
+      <text x="30" y="65" class="dim-label" style="fill:#2563EB;font-size:10px">Tinggi</text>
+      <text x="55" y="114" class="dim-label">Alas</text>`,
+    formulas: {
+      keliling: { text: 'K = AB + BC + CD + AD', fn: v => v.ab+v.bc+v.cd+v.ad, inputs: [{id:'ab',label:'Alas bawah (AB)',unit:'cm'},{id:'cd',label:'Alas atas (CD)',unit:'cm'},{id:'bc',label:'Sisi kanan (BC)',unit:'cm'},{id:'ad',label:'Sisi kiri (AD)',unit:'cm'}], unit: 'cm' },
+      luas:     { text: 'L = ½ × (a + b) × t', fn: v => 0.5*(v.a+v.b)*v.t, inputs: [{id:'a',label:'Sisi sejajar 1 (a)',unit:'cm'},{id:'b',label:'Sisi sejajar 2 (b)',unit:'cm'},{id:'t',label:'Tinggi (t)',unit:'cm'}], unit: 'cm²' }
+    }
+  }
+];
+
+const colorBg = {c1:'#F3EEFF',c2:'#EDFFF6',c3:'#FFF0EE',c4:'#FFF0F7',c5:'#FFFBEB',c6:'#EEF4FF'};
+const colorFg = {c1:'#7C5CBF',c2:'#22A874',c3:'#E8503A',c4:'#E85D9C',c5:'#D97706',c6:'#2563EB'};
+
+const grid = document.getElementById('mainGrid');
+shapes.forEach(sh => {
+  const card = document.createElement('div');
+  card.className = `shape-card ${sh.color}`;
+  card.style.background = colorBg[sh.color] || '#fff';
+  card.setAttribute('tabindex', '0');
+  card.innerHTML = `
+    <div class="card-top">
+      <div class="card-title">${sh.name.toUpperCase()}</div>
+      <div class="shape-svg-wrap">
+        <svg viewBox="0 0 130 120" xmlns="http://www.w3.org/2000/svg">${sh.svgPath}</svg>
+      </div>
+    </div>
+    <div class="card-bottom">
+      <div class="formula-line">Keliling: <span>${sh.formulas.keliling.text}</span></div>
+      <div class="formula-line">Luas: <span>${sh.formulas.luas.text}</span></div>
+      <div class="click-hint">👆 Klik untuk Menghitung!</div>
+    </div>`;
+  card.addEventListener('click', () => openModal(sh.id));
+  card.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') openModal(sh.id); });
+  grid.appendChild(card);
+});
+
+let currentShape = null, currentCalcType = null;
+
+function openModal(id) {
+  currentShape = shapes.find(s => s.id === id);
+  const c = colorFg[currentShape.color];
+  const bg = colorBg[currentShape.color];
+  document.getElementById('modalHeader').innerHTML = `
+    <div class="modal-icon" style="background:${bg}">
+      <svg viewBox="0 0 130 120" width="34" height="28" xmlns="http://www.w3.org/2000/svg">${currentShape.svgPath}</svg>
+    </div>
+    <h2 style="color:${c}">${currentShape.name}</h2>`;
+  document.getElementById('choiceScreen').style.display = '';
+  document.getElementById('calcScreen').classList.remove('show');
+  document.getElementById('resultBox').classList.remove('show');
+  document.getElementById('overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function openCalc(type) {
+  currentCalcType = type;
+  const f = currentShape.formulas[type];
+  document.getElementById('calcBadge').innerHTML = `<span class="calc-type-badge ${type==='keliling'?'badge-keliling':'badge-luas'}">${type==='keliling'?'📐 Menghitung Keliling':'📏 Menghitung Luas'}</span>`;
+  const c = colorFg[currentShape.color];
+  document.getElementById('formulaDisplay').style.borderColor = c;
+  document.getElementById('formulaDisplay').innerHTML = `<b>Rumus:</b> ${f.text}`;
+  const fd = document.getElementById('inputFields');
+  fd.innerHTML = '';
+  f.inputs.forEach(inp => {
+    fd.innerHTML += `<div class="input-group"><label for="inp_${inp.id}">📌 ${inp.label} (${inp.unit})</label><input type="number" id="inp_${inp.id}" placeholder="Masukkan nilai..." min="0" step="any"/></div>`;
+  });
+  document.getElementById('resultBox').classList.remove('show');
+  document.getElementById('choiceScreen').style.display = 'none';
+  document.getElementById('calcScreen').classList.add('show');
+}
+
+function backToChoice() {
+  document.getElementById('choiceScreen').style.display = '';
+  document.getElementById('calcScreen').classList.remove('show');
+}
+
+function hitung() {
+  const f = currentShape.formulas[currentCalcType];
+  const vals = {}; let valid = true;
+  f.inputs.forEach(inp => {
+    const el = document.getElementById('inp_' + inp.id);
+    const v = parseFloat(el.value);
+    if (!el.value || isNaN(v) || v <= 0) {
+      el.style.borderColor = '#EF4444'; el.focus(); valid = false;
+    } else {
+      el.style.borderColor = '#10B981'; vals[inp.id] = v;
+    }
+  });
+  if (!valid) return;
+  const res = f.fn(vals);
+  const isK = currentCalcType === 'keliling';
+  document.getElementById('resultLabel').textContent = isK ? '📐 Keliling Bangun Datar' : '📏 Luas Bangun Datar';
+  document.getElementById('resultValue').textContent = Number.isInteger(res) ? res : parseFloat(res.toFixed(4));
+  document.getElementById('resultUnit').textContent = f.unit;
+  document.getElementById('resultBox').classList.add('show');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('calcScreen').classList.contains('show')) hitung();
+});
+</script>
+</body>
+</html>
+HTMLEOF
+echo "Done"
+Keluaran
+
+Done
